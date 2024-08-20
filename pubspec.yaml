@@ -1,0 +1,17 @@
+name: fading_scroll
+description: "Easily add a smooth fading effect to your scrollable widgets, enhancing the user experience with subtle visual feedback as they scroll."
+version: 0.9.0
+repository: https://github.com/FaFre/fading_scroll.git
+
+environment:
+  sdk: ^3.5.0
+  flutter: ">=1.17.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  lint: ^2.3.0
