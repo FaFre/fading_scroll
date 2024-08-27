@@ -20,6 +20,7 @@ class FadingScroll extends StatefulWidget {
     double? startScrollExtent,
     double? endScrollExtent,
     double? scrollExtent,
+    this.shaderPadding = EdgeInsets.zero,
     this.transitionDuration,
   })  : startScrollExtent = startScrollExtent ?? scrollExtent,
         endScrollExtent = endScrollExtent ?? scrollExtent,
@@ -59,6 +60,10 @@ class FadingScroll extends StatefulWidget {
   ///
   /// If not provided, it is equivalent to [endScrollExtent].
   final double? endFadingSize;
+
+  /// The padding applied to the shader. This is particularly useful for scenarios
+  /// such as [CustomScrollView] with a sticky header.
+  final EdgeInsets shaderPadding;
 
   /// The duration for animate the mask whenever it changes.
   ///
@@ -175,6 +180,7 @@ class _FadingScrollableState extends State<FadingScroll> {
             startStop: startStop,
             endStop: endStop,
             isVertical: isVertical,
+            shaderPadding: widget.shaderPadding,
             child: child!,
           );
         }
@@ -183,6 +189,7 @@ class _FadingScrollableState extends State<FadingScroll> {
           startStop: startStop,
           endStop: endStop,
           isVertical: isVertical,
+          shaderPadding: widget.shaderPadding,
           child: child!,
         );
       },
@@ -195,12 +202,14 @@ class _Mask extends StatelessWidget {
   const _Mask({
     required this.startStop,
     required this.endStop,
-    required this.child,
+    required this.shaderPadding,
     required this.isVertical,
+    required this.child,
   });
 
   final double startStop;
   final double endStop;
+  final EdgeInsets shaderPadding;
   final bool isVertical;
   final Widget child;
 
@@ -210,6 +219,13 @@ class _Mask extends StatelessWidget {
     final endStop = this.endStop.clamp(0.0, 1.0);
     return ShaderMask(
       shaderCallback: (Rect bounds) {
+        final paddedBounds = Rect.fromLTRB(
+          bounds.left + shaderPadding.left,
+          bounds.top + shaderPadding.top,
+          bounds.right - shaderPadding.right,
+          bounds.bottom - shaderPadding.bottom,
+        );
+
         return LinearGradient(
           begin: isVertical ? Alignment.topCenter : Alignment.centerLeft,
           end: isVertical ? Alignment.bottomCenter : Alignment.centerRight,
@@ -226,7 +242,7 @@ class _Mask extends StatelessWidget {
             1,
           ],
           tileMode: TileMode.mirror,
-        ).createShader(bounds);
+        ).createShader(paddedBounds);
       },
       child: child,
     );
@@ -239,12 +255,14 @@ class _AnimatedMask extends ImplicitlyAnimatedWidget {
     required this.endStop,
     required this.child,
     required this.isVertical,
+    required this.shaderPadding,
     required super.duration,
   });
 
   final double startStop;
   final double endStop;
   final bool isVertical;
+  final EdgeInsets shaderPadding;
   final Widget child;
 
   @override
@@ -284,6 +302,7 @@ class _AnimatedMaskState extends AnimatedWidgetBaseState<_AnimatedMask> {
       endStop: endStop,
       startStop: startStop,
       isVertical: widget.isVertical,
+      shaderPadding: widget.shaderPadding,
       child: widget.child,
     );
   }
