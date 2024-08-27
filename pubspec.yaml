@@ -1,6 +1,6 @@
 name: fading_scroll
 description: "Easily add a smooth fading effect to your scrollable widgets, enhancing the user experience with subtle visual feedback as they scroll."
-version: 0.9.0
+version: 0.9.1
 repository: https://github.com/FaFre/fading_scroll.git
 
 environment:
