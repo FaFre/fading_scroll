@@ -83,6 +83,14 @@ class _FadingScrollableState extends State<FadingScroll> {
 
   var _totalExtent = 0.0;
 
+  /// Whether the [controller] is attached to exactly one scroll view.
+  ///
+  /// [ScrollController.position] asserts that a single position is attached, so
+  /// [ScrollController.hasClients] (which is `true` for one *or more* positions)
+  /// isn't a safe guard when the same controller is shared across multiple
+  /// scroll views (e.g. a [NestedScrollView]).
+  bool get _hasSinglePosition => controller.positions.length == 1;
+
   @override
   void initState() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -111,7 +119,7 @@ class _FadingScrollableState extends State<FadingScroll> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) {
         final newTotalExtent =
-            controller.hasClients && controller.position.hasContentDimensions
+            _hasSinglePosition && controller.position.hasContentDimensions
                 ? controller.position.extentBefore +
                     controller.position.extentInside +
                     controller.position.extentAfter
@@ -134,7 +142,7 @@ class _FadingScrollableState extends State<FadingScroll> {
 
   double _fadingMaxAmount(double maxExtent) {
     final viewportDimension =
-        controller.hasClients && controller.position.hasContentDimensions
+        _hasSinglePosition && controller.position.hasContentDimensions
             ? controller.position.viewportDimension
             : 0.0;
     return (maxExtent / viewportDimension).clamp(0, 0.5);
@@ -155,7 +163,7 @@ class _FadingScrollableState extends State<FadingScroll> {
     return ListenableBuilder(
       listenable: controller,
       builder: (context, child) {
-        final isAttached = controller.hasClients;
+        final isAttached = _hasSinglePosition;
         final isVertical =
             !isAttached || controller.position.axis == Axis.vertical;
         final startAmount = !isAttached ||

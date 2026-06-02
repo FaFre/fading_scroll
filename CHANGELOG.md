@@ -1,3 +1,7 @@
+## 0.9.3
+
+* Fixed a crash (`ScrollController attached to multiple scroll views`) when the same `ScrollController` is shared across multiple scroll views. `FadingScroll` now degrades gracefully instead of asserting when more than one position is attached.
+
 ## 0.9.2
 
 * Skip the `ShaderMask` (and its offscreen `saveLayer` pass) when neither edge is faded, improving performance for content that fits the viewport.

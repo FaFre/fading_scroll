@@ -82,6 +82,30 @@ void main() {
     expect(find.byType(ShaderMask), findsOneWidget);
   });
 
+  testWidgets('does not crash when the controller is shared by two scrollables',
+      (tester) async {
+    // Sharing one ScrollController across multiple scroll views makes
+    // `controller.position` throw (it asserts a single attached position).
+    // FadingScroll must degrade gracefully instead of crashing.
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Scaffold(
+          body: FadingScroll(
+            builder: (context, controller) => Row(
+              children: [
+                Expanded(child: _list(controller, 50)),
+                Expanded(child: _list(controller, 50)),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(tester.takeException(), isNull);
+  });
+
   testWidgets('disposes an internally created controller without error',
       (tester) async {
     await tester.pumpWidget(
