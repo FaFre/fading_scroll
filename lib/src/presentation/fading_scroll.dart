@@ -226,14 +226,6 @@ class _Mask extends StatelessWidget {
     final startStop = this.startStop.clamp(0.0, 1.0);
     final endStop = this.endStop.clamp(0.0, 1.0);
 
-    // When neither edge is faded the mask is a no-op. Skip the [ShaderMask]
-    // entirely to avoid the cost of its offscreen `saveLayer` pass. This is the
-    // common case for content that fits the viewport or rests at a non-overflow
-    // position.
-    if (startStop <= 0.0 && endStop >= 1.0) {
-      return child;
-    }
-
     return ShaderMask(
       shaderCallback: (Rect bounds) {
         final paddedBounds = Rect.fromLTRB(

@@ -1,3 +1,7 @@
+## 0.9.4
+
+* Fixed a regression where focused descendants such as `TextField` could lose focus and close the keyboard when scroll content changed between fitting and overflowing the viewport. `FadingScroll` now keeps the `ShaderMask` wrapper stable across fade state changes.
+
 ## 0.9.3
 
 * Fixed a crash (`ScrollController attached to multiple scroll views`) when the same `ScrollController` is shared across multiple scroll views. `FadingScroll` now degrades gracefully instead of asserting when more than one position is attached.

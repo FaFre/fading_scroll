@@ -7,10 +7,10 @@ environment:
   sdk: ^3.5.0
 
 dependencies:
-  flutter:
-    sdk: flutter
   fading_scroll:
     path: ../
+  flutter:
+    sdk: flutter
 
 dev_dependencies:
   flutter_test:

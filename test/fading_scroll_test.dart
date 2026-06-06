@@ -41,10 +41,11 @@ void main() {
     expect(captured!.hasClients, isTrue);
   });
 
-  testWidgets('inserts no ShaderMask when content fits the viewport',
+  testWidgets('keeps a stable ShaderMask when content fits the viewport',
       (tester) async {
-    // A single short item cannot overflow the 400px viewport, so neither edge
-    // fades and the mask must be skipped entirely.
+    // Keep the wrapper stable even when a single short item cannot overflow the
+    // 400px viewport. Toggling the wrapper disposes focused descendants when
+    // content later starts or stops overflowing.
     await tester.pumpWidget(
       _wrap(
         builder: (context, controller) => ListView(
@@ -55,7 +56,36 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    expect(find.byType(ShaderMask), findsNothing);
+    expect(find.byType(ShaderMask), findsOneWidget);
+  });
+
+  testWidgets('keeps text input open when content starts overflowing',
+      (tester) async {
+    Widget wrapTextList(int extraItemCount) {
+      return _wrap(
+        builder: (context, controller) => ListView(
+          controller: controller,
+          children: [
+            const TextField(),
+            for (var i = 0; i < extraItemCount; i++)
+              SizedBox(height: 100, child: Text('extra item $i')),
+          ],
+        ),
+      );
+    }
+
+    await tester.pumpWidget(wrapTextList(0));
+    await tester.pumpAndSettle();
+
+    final textField = find.byType(TextField);
+    await tester.showKeyboard(textField);
+    expect(tester.testTextInput.isVisible, isTrue);
+
+    await tester.pumpWidget(wrapTextList(20));
+    await tester.pumpAndSettle();
+
+    expect(find.byType(ShaderMask), findsOneWidget);
+    expect(tester.testTextInput.isVisible, isTrue);
   });
 
   testWidgets('inserts a ShaderMask when content overflows', (tester) async {
